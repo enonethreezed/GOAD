@@ -445,6 +445,16 @@ class Goad(cmd.Cmd):
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Enable vagrant done in {time_provision}')
 
+    def do_disable_localuser(self, arg):
+        if self.lab_manager.get_current_instance() and not self.lab_manager.get_current_instance().is_ludus():
+            Log.error('disable_localuser is only available for the ludus provider')
+            return
+        start = time.time()
+        provision_result = self.lab_manager.get_current_instance_provisioner().run_disable_localuser()
+        if provision_result:
+            time_provision = time.ctime(time.time() - start)[11:19]
+            Log.info(f'Disable localuser done in {time_provision}')
+
     # alias to list
     def do_ls(self, arg=''):
         self.do_list(arg)

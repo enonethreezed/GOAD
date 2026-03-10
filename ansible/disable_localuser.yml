@@ -1,0 +1,5 @@
+---
+- name: "Disable localuser"
+  hosts: domain
+  roles:
+    - { role: 'disable_user', tags: 'disable_localuser', username: "localuser"}

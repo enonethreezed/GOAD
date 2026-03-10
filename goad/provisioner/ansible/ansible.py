@@ -152,3 +152,12 @@ class Ansible(Provisioner):
             Log.error(f'Something wrong during the provisioning task : {playbook}')
             return False
         return provision_result
+
+    def run_disable_localuser(self):
+        inventory = self.get_disable_vagrant_inventory()
+        playbook = 'disable_localuser.yml'
+        provision_result = self.run_playbook(playbook, inventory)
+        if not provision_result:
+            Log.error(f'Something wrong during the provisioning task : {playbook}')
+            return False
+        return provision_result
