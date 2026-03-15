@@ -1,7 +1,9 @@
 - name: "Reboot all"
   hosts: domain
+  ignore_unreachable: yes
   tasks:
     - name: "reboot"
       win_reboot:
         reboot_timeout: 1800
         post_reboot_delay: 200
+      ignore_errors: yes
