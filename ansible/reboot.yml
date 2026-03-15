@@ -3,5 +3,5 @@
   tasks:
     - name: "reboot"
       win_reboot:
-        reboot_timeout: 1000
+        reboot_timeout: 1800
         post_reboot_delay: 200
