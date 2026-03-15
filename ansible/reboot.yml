@@ -28,12 +28,8 @@
     - name: "Disable automatic repair to prevent repair loop on reboot"
       win_shell: bcdedit /set "{current}" recoveryenabled no
       ignore_errors: yes
-    - name: "reboot"
-      win_reboot:
-        reboot_timeout: 1800
-        post_reboot_delay: 120
-        shutdown_timeout_sec: 60
-      ignore_errors: yes
-    - name: "Re-enable automatic repair after successful reboot"
-      win_shell: bcdedit /set "{current}" recoveryenabled yes
+    - name: "reboot (fire-and-forget to avoid vTPM boot-lock on Proxmox)"
+      win_shell: shutdown /r /t 10 /f
+      async: 20
+      poll: 0
       ignore_errors: yes
