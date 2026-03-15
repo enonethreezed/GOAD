@@ -1,9 +1,19 @@
-- name: "Reboot all"
-  hosts: domain
+- name: "Reboot domain controllers first"
+  hosts: dc
   ignore_unreachable: yes
   tasks:
     - name: "reboot"
       win_reboot:
         reboot_timeout: 1800
-        post_reboot_delay: 200
+        post_reboot_delay: 120
+      ignore_errors: yes
+
+- name: "Reboot member servers after DC is back"
+  hosts: domain:!dc
+  ignore_unreachable: yes
+  tasks:
+    - name: "reboot"
+      win_reboot:
+        reboot_timeout: 1800
+        post_reboot_delay: 120
       ignore_errors: yes
