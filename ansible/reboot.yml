@@ -12,6 +12,16 @@
   hosts: domain:!dc
   ignore_unreachable: yes
   tasks:
+    - name: "Disable BitLocker to prevent TPM boot failure after domain join"
+      win_shell: |
+        $vol = Get-BitLockerVolume -MountPoint 'C:' -ErrorAction SilentlyContinue
+        if ($vol -and $vol.ProtectionStatus -eq 'On') {
+          Disable-BitLocker -MountPoint 'C:'
+          Write-Output "BitLocker disabled"
+        } else {
+          Write-Output "BitLocker not enabled"
+        }
+      ignore_errors: yes
     - name: "Disable automatic repair to prevent repair loop on reboot"
       win_shell: bcdedit /set "{current}" recoveryenabled no
       ignore_errors: yes
