@@ -8,28 +8,9 @@
         post_reboot_delay: 300
       ignore_errors: yes
 
-- name: "Reboot member servers after DC is back"
-  hosts: domain:!dc
-  ignore_unreachable: yes
-  tasks:
-    - name: "Suspend BitLocker to prevent TPM boot failure after domain join"
-      win_shell: |
-        $vol = Get-BitLockerVolume -MountPoint 'C:' -ErrorAction SilentlyContinue
-        if ($vol -and $vol.ProtectionStatus -eq 'On') {
-          Suspend-BitLocker -MountPoint 'C:' -RebootCount 1
-          Write-Output "BitLocker suspended for next reboot"
-        } else {
-          Write-Output "BitLocker not enabled or already suspended"
-        }
-      ignore_errors: yes
-    - name: "Set boot policy to ignore failures (prevent automatic repair loop)"
-      win_shell: bcdedit /set "{default}" bootstatuspolicy ignoreallfailures
-      ignore_errors: yes
-    - name: "Disable automatic repair to prevent repair loop on reboot"
-      win_shell: bcdedit /set "{current}" recoveryenabled no
-      ignore_errors: yes
-    - name: "reboot (fire-and-forget to avoid vTPM boot-lock on Proxmox)"
-      win_shell: shutdown /r /t 10 /f
-      async: 20
-      poll: 0
-      ignore_errors: yes
+# NOTE: Member server reboot is intentionally skipped here.
+# Windows Server 2025 with vTPM on Proxmox/Ludus does not reliably survive
+# a graceful Windows shutdown after domain join (the vTPM emulation corrupts
+# the disk state, making the VM permanently unbootable even after a hard reset).
+# Member servers are already rebooted during ad-members.yml (domain join step),
+# so a second reboot here is not required for the lab to be functional.
