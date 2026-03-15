@@ -5,7 +5,7 @@
     - name: "reboot"
       win_reboot:
         reboot_timeout: 1800
-        post_reboot_delay: 120
+        post_reboot_delay: 300
       ignore_errors: yes
 
 - name: "Reboot member servers after DC is back"
@@ -19,7 +19,7 @@
           Disable-BitLocker -MountPoint 'C:'
           Write-Output "BitLocker disabled"
         } else {
-          Write-Output "BitLocker not enabled"
+          Write-Output "BitLocker not enabled or already disabled"
         }
       ignore_errors: yes
     - name: "Disable automatic repair to prevent repair loop on reboot"
@@ -29,6 +29,7 @@
       win_reboot:
         reboot_timeout: 1800
         post_reboot_delay: 120
+        shutdown_timeout_sec: 60
       ignore_errors: yes
     - name: "Re-enable automatic repair after successful reboot"
       win_shell: bcdedit /set "{current}" recoveryenabled yes
